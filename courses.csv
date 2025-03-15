@@ -1,0 +1,22 @@
+Title,Code,Department,Students,Class Hours,Tutorial Hours,Lab Hours
+Data Structures,CS101,Computer Science,60,Mon 4;Wed 4,Fri 5,Tue 6 7
+Database Systems,CS102,Computer Science,55,Mon 3;Wed 3,Fri 4,Thu 5 6
+Operating Systems,CS201,Computer Science,50,Tue 2;Thu 2,Mon 3,Wed 4 5
+Software Engineering,CS301,Software Engineering,40,Mon 1;Wed 1,Fri 2,Thu 3 4
+Machine Learning,AI401,Artificial Intelligence,45,Tue 6;Thu 6,Wed 7,Fri 8 9
+Deep Learning,AI402,Artificial Intelligence,50,Mon 3;Wed 3,Fri 4,Thu 5 6
+Cybersecurity,CS501,Cybersecurity,48,Tue 5;Thu 5,Mon 6,Wed 7 8
+Cloud Computing,CS601,Cloud Technologies,52,Mon 2;Wed 2,Fri 3,Thu 4 5
+Computer Networks,CS701,Networking,46,Tue 7;Thu 7,Mon 8,Wed 9 10
+Artificial Intelligence,AI501,Artificial Intelligence,60,Mon 9;Wed 9,Fri 10,Thu 11 12
+Natural Language Processing,AI502,Artificial Intelligence,40,Tue 8;Thu 8,Mon 9,Fri 10 11
+Circuit Analysis,EE101,Electrical Engineering,55,Mon 3;Wed 3,Fri 4,Thu 5 6
+Electromagnetics,EE102,Electrical Engineering,50,Tue 2;Thu 2,Mon 3,Wed 4 5
+Microprocessors,EE201,Electrical Engineering,45,Mon 5;Wed 5,Fri 6,Tue 7 8
+Power Electronics,EE202,Electrical Engineering,48,Tue 6;Thu 6,Mon 7,Fri 8 9
+Thermodynamics,ME101,Mechanical Engineering,60,Mon 4;Wed 4,Fri 5,Tue 6 7
+Fluid Mechanics,ME102,Mechanical Engineering,55,Mon 3;Wed 3,Fri 4,Thu 5 6
+Machine Design,ME103,Mechanical Engineering,50,Tue 2;Thu 2,Mon 3,Wed 4 5
+Manufacturing Processes,ME104,Mechanical Engineering,40,Mon 1;Wed 1,Fri 2,Thu 3 4
+Robotics Lab,ME201,Mechanical Engineering,45,Tue 6;Thu 6,Wed 7,Fri 8 9
+Automobile Engineering Lab,ME202,Mechanical Engineering,50,Mon 3;Wed 3,Fri 4,Thu 5 6
