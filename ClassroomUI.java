@@ -1,7 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
 
 public class ClassroomUI {
     private JFrame frame;
@@ -42,7 +41,7 @@ public class ClassroomUI {
 
         addButton.addActionListener(e -> addClassroom());
         removeButton.addActionListener(e -> removeClassroom());
-        finishButton.addActionListener(e -> frame.dispose());
+        finishButton.addActionListener(e -> openSelectionWindow()); 
 
         buttonPanel.add(addButton);
         buttonPanel.add(removeButton);
@@ -52,6 +51,11 @@ public class ClassroomUI {
         frame.add(formPanel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
+    }
+
+    private void openSelectionWindow() {
+        new SelectionWindow();
+        frame.dispose();
     }
 
     private void addClassroom() {
