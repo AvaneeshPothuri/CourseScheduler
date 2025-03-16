@@ -1,65 +1,111 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.*;
+import java.io.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
-public class SelectionWindow extends JFrame {
-    private List<Course> courses;
-    private List<Instructor> instructors;
-    private List<Classroom> classrooms;
 
-    public SelectionWindow(java.util.List<Course> courses, java.util.List<Instructor> instructors, java.util.List<Classroom> classrooms){
-        this.courses = courses;
-        this.instructors = instructors;
-        this.classrooms = classrooms;
+public class SelectionWindow {
+    private JFrame frame;
+    private List<Course> courseList;
+    private List<Instructor> instructorList;
+    private List<Classroom> classroomList;
+    private List<String> timeSlots = List.of("9AM-10AM", "10AM-11AM", "11AM-12PM");
 
-        setTitle("Selection Window");
-        setSize(400, 250);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null); 
+    public SelectionWindow(List<Course> courses, List<Instructor> instructors, List<Classroom> classrooms) {
+        this.courseList = courses;
+        this.instructorList = instructors;
+        this.classroomList = classrooms;
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JLabel headingLabel = new JLabel("Select How You Want to Create Your Timetable");
-        headingLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        headingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 2, 20, 10));
+        frame = new JFrame("Selection Window");
+        frame.setSize(400, 200);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new FlowLayout());
 
         JButton manualButton = new JButton("Manual");
         JButton automaticButton = new JButton("Automatic");
 
-        styleButton(manualButton, new Color(70, 130, 180));
-        styleButton(automaticButton, new Color(34, 139, 34));
+        automaticButton.addActionListener(e -> generateAndDisplayTimetable());
 
-        buttonPanel.add(manualButton);
-        buttonPanel.add(automaticButton);
-
-        automaticButton.addActionListener(e -> generateTimetable());
-
-        mainPanel.add(headingLabel);
-        mainPanel.add(Box.createVerticalStrut(20));
-        mainPanel.add(buttonPanel);
-
-        add(mainPanel);
-        setVisible(true);
+        frame.add(manualButton);
+        frame.add(automaticButton);
+        frame.setVisible(true);
     }
 
-    private void styleButton(JButton button, Color color) {
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBackground(color);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
+    private void generateAndDisplayTimetable() {
+        List<TimetableEntry> timetable = new ArrayList<>();
+        Map<Instructor, List<String>> instructorAvailability = new HashMap<>();
+        Map<Classroom, List<String>> classroomAvailability = new HashMap<>();
+
+        for (Instructor instructor : instructorList) {
+            instructorAvailability.put(instructor, new ArrayList<>(timeSlots));
+        }
+        for (Classroom classroom : classroomList) {
+            classroomAvailability.put(classroom, new ArrayList<>(timeSlots));
+        }
+
+        for (Course course : courseList) {
+            for (String slot : timeSlots) {
+                Instructor assignedInstructor = findAvailableInstructor(instructorAvailability, slot);
+                Classroom assignedClassroom = findAvailableClassroom(classroomAvailability, slot);
+
+                if (assignedInstructor != null && assignedClassroom != null) {
+                    TimetableEntry entry = new TimetableEntry(course, assignedInstructor, assignedClassroom, slot);
+                    timetable.add(entry);
+
+                    instructorAvailability.get(assignedInstructor).remove(slot);
+                    classroomAvailability.get(assignedClassroom).remove(slot);
+
+                    course.setAssigned(1);
+                    break; 
+                }
+            }
+        }
+
+        displayTimetable(timetable);
     }
 
-    private void generateTimetable() {
-        TimetableGenerator generator = new TimetableGenerator(courses, instructors, classrooms);
-        List<TimetableEntry> timetable = generator.createSchedule();
+    private Instructor findAvailableInstructor(Map<Instructor, List<String>> availability, String slot) {
+        for (Instructor instructor : availability.keySet()) {
+            if (availability.get(instructor).contains(slot)) {
+                return instructor;
+            }
+        }
+        return null;
+    }
 
-        new TimetableDisplay(timetable);
+    private Classroom findAvailableClassroom(Map<Classroom, List<String>> availability, String slot) {
+        for (Classroom classroom : availability.keySet()) {
+            if (availability.get(classroom).contains(slot)) {
+                return classroom;
+            }
+        }
+        return null;
+    }
+
+    private void displayTimetable(List<TimetableEntry> timetable) {
+        JFrame timetableFrame = new JFrame("Generated Timetable");
+        timetableFrame.setSize(600, 400);
+        timetableFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        timetableFrame.setLayout(new BorderLayout());
+
+        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Code", "Course", "Instructor", "Room", "Timeslot"}, 0);
+        JTable table = new JTable(tableModel);
+
+        for (TimetableEntry entry : timetable) {
+            tableModel.addRow(new Object[]{
+                entry.getCourse().getCode(),
+                entry.getCourse().getTitle(),
+                entry.getInstructor().getName(),
+                entry.getClassroom().getRoomNumber(),
+                entry.getTimeslot()
+            });
+        }
+
+        timetableFrame.add(new JScrollPane(table), BorderLayout.CENTER);
+        timetableFrame.setVisible(true);
     }
 }

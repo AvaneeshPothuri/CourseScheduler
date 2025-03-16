@@ -1,26 +1,22 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.util.List;
 
-public class TimetableDisplay extends JFrame {
-    public TimetableDisplay(List<TimetableEntry> timetable) {
-        setTitle("Generated Timetable");
-        setSize(600, 400);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        String[] columnNames = {"Course", "Type", "Instructor", "Room", "Time Slot"};
-        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-
+public class TimetableDisplay {
+    public static void displayTimetable(List<TimetableEntry> timetable) {
+        System.out.println("Generated Timetable:");
+        System.out.println("----------------------------------------------------------");
+        System.out.printf("%-10s | %-30s | %-15s | %-10s | %-10s%n", 
+                          "Code", "Course", "Instructor", "Room", "Timeslot");
+        System.out.println("----------------------------------------------------------");
+        
         for (TimetableEntry entry : timetable) {
-            model.addRow(new Object[]{entry.getCourse(), entry.getType(), entry.getInstructor(), entry.getRoom(), entry.getTimeSlot()});
+            System.out.printf("%-10s | %-30s | %-15s | %-10s | %-10s%n",
+                              entry.getCourse().getCode(),
+                              entry.getCourse().getTitle(),
+                              entry.getInstructor().getName(),
+                              entry.getClassroom().getRoomNumber(),
+                              entry.getTimeslot());
         }
-
-        JTable table = new JTable(model);
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        add(scrollPane);
-        setVisible(true);
+        
+        System.out.println("----------------------------------------------------------");
     }
 }

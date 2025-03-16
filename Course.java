@@ -9,6 +9,7 @@ public class Course {
     private List<String> classHours;
     private List<String> tutorialHours;
     private List<String> labHours;
+    private int assigned;
 
     public Course(String title, String code, String department, int numStudents, 
                   List<String> classHours, List<String> tutorialHours, List<String> labHours) {
@@ -33,6 +34,9 @@ public class Course {
     public int getLectureCount() { return classHours.size(); }
     public int getTutorialCount() { return tutorialHours.size(); }
     public int getLabCount() { return labHours.size(); }
+
+    public void setAssigned(int assigned) {this.assigned = assigned;}
+    public int getAssigned() {return assigned;}
 
     public String toCSV() {
         return String.join(",", title, code, department, 
@@ -67,7 +71,6 @@ public class Course {
             return null;
         }
     }
-    
 
     @Override
     public String toString() {

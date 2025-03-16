@@ -1,21 +1,25 @@
 public class TimetableEntry {
-    private String course;
-    private String type;
-    private String instructor;
-    private String room;
-    private int timeSlot;
+    private Course course;
+    private Instructor instructor;
+    private Classroom classroom;
+    private String timeslot;
 
-    public TimetableEntry(String course, String type, String instructor, String room, int timeSlot) {
+    public TimetableEntry(Course course, Instructor instructor, Classroom classroom, String timeslot) {
         this.course = course;
-        this.type = type;
         this.instructor = instructor;
-        this.room = room;
-        this.timeSlot = timeSlot;
+        this.classroom = classroom;
+        this.timeslot = timeslot;
     }
 
-    public String getCourse() { return course; }
-    public String getType() { return type; }
-    public String getInstructor() { return instructor; }
-    public String getRoom() { return room; }
-    public int getTimeSlot() { return timeSlot; }
+    public Course getCourse() { return course; }
+    public Instructor getInstructor() { return instructor; }
+    public Classroom getClassroom() { return classroom; }
+    public String getTimeslot() { return timeslot; }
+
+    @Override
+    public String toString() {
+        return course.getCode() + " - " + course.getTitle() + " | " + 
+               instructor.getName() + " | " + classroom.getRoomNumber() + 
+               " (" + classroom.getType() + ") | " + timeslot;
+    }
 }
