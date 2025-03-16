@@ -1,14 +1,17 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.*; 
 import java.awt.event.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.*;
+
 
 public class InstructorUI extends JFrame {
     private DefaultTableModel tableModel;
     private JTable instructorTable;
     private JTextField nameField, departmentField;
-    private static final String FILE_NAME = "instructors.csv";
+    private List<Instructor> instructors;
 
     public InstructorUI() {
         setTitle("Instructor Management");
@@ -19,7 +22,9 @@ public class InstructorUI extends JFrame {
         String[] columns = {"Name", "Department"};
         tableModel = new DefaultTableModel(columns, 0);
         instructorTable = new JTable(tableModel);
-        loadInstructors();
+
+        instructors = InstructorManager.loadInstructors();
+        loadInstructorsIntoTable();
 
         JPanel formPanel = new JPanel(new GridLayout(2, 2, 5, 5));
         formPanel.add(new JLabel("Name:"));
@@ -48,6 +53,12 @@ public class InstructorUI extends JFrame {
         setVisible(true);
     }
 
+    private void loadInstructorsIntoTable() {
+        for (Instructor instructor : instructors) {
+            tableModel.addRow(new Object[]{instructor.getName(), instructor.getDepartment()});
+        }
+    }
+
     private void addInstructor() {
         String name = nameField.getText().trim();
         String department = departmentField.getText().trim();
@@ -57,8 +68,10 @@ public class InstructorUI extends JFrame {
             return;
         }
 
+        Instructor instructor = new Instructor(name, department);
+        instructors.add(instructor);
         tableModel.addRow(new Object[]{name, department});
-        saveInstructors();
+        InstructorManager.saveInstructors(instructors);
 
         nameField.setText("");
         departmentField.setText("");
@@ -67,46 +80,24 @@ public class InstructorUI extends JFrame {
     private void removeInstructor() {
         int selectedRow = instructorTable.getSelectedRow();
         if (selectedRow != -1) {
+            instructors.remove(selectedRow);
             tableModel.removeRow(selectedRow);
-            saveInstructors();
+            InstructorManager.saveInstructors(instructors);
         } else {
             JOptionPane.showMessageDialog(this, "Select an instructor to remove!", "Error", JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    private void saveInstructors() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                writer.write(tableModel.getValueAt(i, 0) + "," + tableModel.getValueAt(i, 1));
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error saving instructors", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void loadInstructors() {
-        File file = new File(FILE_NAME);
-        if (!file.exists()) return;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    tableModel.addRow(new Object[]{parts[0].trim(), parts[1].trim()});
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error loading instructors", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     private void finishAndOpenClassroomManager() {
-        saveInstructors();
-        new ClassroomManager();
+        InstructorManager.saveInstructors(instructors);
+    
+        SwingUtilities.invokeLater(() -> {
+            new ClassroomUI();
+        });
+    
         dispose();
     }
+    
 
     public static void main(String[] args) {
         new InstructorUI();
