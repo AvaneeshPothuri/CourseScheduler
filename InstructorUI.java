@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.*;
 
-
 public class InstructorUI extends JFrame {
     private DefaultTableModel tableModel;
     private JTable instructorTable;
@@ -91,12 +90,15 @@ public class InstructorUI extends JFrame {
     private void finishAndOpenClassroomManager() {
         InstructorManager.saveInstructors(instructors);
     
+        List<Course> courseList = new ArrayList<>();
+        List<Instructor> instructorList = new ArrayList<>(instructors);
+    
         SwingUtilities.invokeLater(() -> {
-            new ClassroomUI();
+            new ClassroomUI(courseList, instructorList);
         });
     
         dispose();
-    }
+    }    
     
 
     public static void main(String[] args) {

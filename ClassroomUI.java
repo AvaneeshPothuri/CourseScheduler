@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class ClassroomUI {
     private JFrame frame;
@@ -8,12 +9,16 @@ public class ClassroomUI {
     private DefaultTableModel tableModel;
     private JTextField roomNumberField, typeField, capacityField;
     private ClassroomManager classroomManager;
+    private List<Course> courseList;
+    private List<Instructor> instructorList;
 
-    public ClassroomUI() {
-        classroomManager = new ClassroomManager();
+    public ClassroomUI(List<Course> courses, List<Instructor> instructors) {
+        this.courseList = courses;
+        this.instructorList = instructors;
+        this.classroomManager = new ClassroomManager();
 
         frame = new JFrame("Classroom Manager");
-        frame.setSize(500, 400);
+        frame.setSize(600, 450);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
@@ -22,6 +27,7 @@ public class ClassroomUI {
         loadTableData();
 
         JPanel formPanel = new JPanel(new GridLayout(3, 2, 5, 5));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         formPanel.add(new JLabel("Room Number:"));
         roomNumberField = new JTextField();
         formPanel.add(roomNumberField);
@@ -54,7 +60,7 @@ public class ClassroomUI {
     }
 
     private void openSelectionWindow() {
-        new SelectionWindow();
+        new SelectionWindow(courseList, instructorList, classroomManager.getClassrooms());
         frame.dispose();
     }
 
@@ -70,15 +76,15 @@ public class ClassroomUI {
 
         try {
             int capacity = Integer.parseInt(capacityStr);
+            if (capacity <= 0) {
+                throw new NumberFormatException();
+            }
             Classroom classroom = new Classroom(roomNumber, type, capacity);
             classroomManager.addClassroom(classroom);
             tableModel.addRow(new Object[]{roomNumber, type, capacity});
-
-            roomNumberField.setText("");
-            typeField.setText("");
-            capacityField.setText("");
+            clearFormFields();
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(frame, "Capacity must be a number!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Capacity must be a positive number!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -98,7 +104,9 @@ public class ClassroomUI {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ClassroomUI::new);
+    private void clearFormFields() {
+        roomNumberField.setText("");
+        typeField.setText("");
+        capacityField.setText("");
     }
 }

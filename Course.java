@@ -29,6 +29,11 @@ public class Course {
     public List<String> getTutorialHours() { return tutorialHours; }
     public List<String> getLabHours() { return labHours; }
 
+    public String getName() { return title; }
+    public int getLectureCount() { return classHours.size(); }
+    public int getTutorialCount() { return tutorialHours.size(); }
+    public int getLabCount() { return labHours.size(); }
+
     public String toCSV() {
         return String.join(",", title, code, department, 
                 String.valueOf(numStudents),
