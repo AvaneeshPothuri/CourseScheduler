@@ -4,10 +4,11 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CourseForm extends JDialog {
     private JTextField titleField, codeField, departmentField, numStudentsField;
-    private JTextField classHoursField, tutorialHoursField, labHoursField;
+    private JTextField classHoursField, tutorialHoursField, labHourField;
     private Course course;
 
     public CourseForm(JFrame parent) {
@@ -30,17 +31,17 @@ public class CourseForm extends JDialog {
         numStudentsField = new JTextField();
         add(numStudentsField);
 
-        add(new JLabel("Class Hours (comma-separated):"));
+        add(new JLabel("Class Hours (comma-separated integers):"));
         classHoursField = new JTextField();
         add(classHoursField);
 
-        add(new JLabel("Tutorial Hours (optional):"));
+        add(new JLabel("Tutorial Hours (optional, comma-separated integers):"));
         tutorialHoursField = new JTextField();
         add(tutorialHoursField);
 
-        add(new JLabel("Lab Hours (optional):"));
-        labHoursField = new JTextField();
-        add(labHoursField);
+        add(new JLabel("Lab Hour (optional, single integer):"));
+        labHourField = new JTextField();
+        add(labHourField);
 
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(this::saveCourse);
@@ -56,20 +57,29 @@ public class CourseForm extends JDialog {
 
     private void saveCourse(ActionEvent e) {
         try {
-            String title = titleField.getText();
-            String code = codeField.getText();
-            String department = departmentField.getText();
-            int numStudents = Integer.parseInt(numStudentsField.getText());
-            List<String> classHours = Arrays.asList(classHoursField.getText().split(","));
-            List<String> tutorialHours = tutorialHoursField.getText().isEmpty()
-                    ? new ArrayList<>() : Arrays.asList(tutorialHoursField.getText().split(","));
-            List<String> labHours = labHoursField.getText().isEmpty()
-                    ? new ArrayList<>() : Arrays.asList(labHoursField.getText().split(","));
+            String title = titleField.getText().trim();
+            String code = codeField.getText().trim();
+            String department = departmentField.getText().trim();
+            int numStudents = Integer.parseInt(numStudentsField.getText().trim());
 
-            course = new Course(title, code, department, numStudents, classHours, tutorialHours, labHours);
+            List<Integer> classHours = classHoursField.getText().trim().isEmpty() ?
+                new ArrayList<>() : Arrays.stream(classHoursField.getText().split(","))
+                                          .map(String::trim)
+                                          .map(Integer::parseInt)
+                                          .collect(Collectors.toList());
+
+            List<Integer> tutorialHours = tutorialHoursField.getText().trim().isEmpty() ?
+                new ArrayList<>() : Arrays.stream(tutorialHoursField.getText().split(","))
+                                          .map(String::trim)
+                                          .map(Integer::parseInt)
+                                          .collect(Collectors.toList());
+
+            Integer labHour = labHourField.getText().trim().isEmpty() ? null : Integer.parseInt(labHourField.getText().trim());
+
+            course = new Course(title, code, department, numStudents, classHours, tutorialHours, labHour);
             dispose();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input! Please enter numbers correctly.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

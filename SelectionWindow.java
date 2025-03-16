@@ -1,111 +1,83 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
+import java.util.*;
+import java.nio.file.*;
+import java.util.stream.Collectors;
 
 public class SelectionWindow {
-    private JFrame frame;
-    private List<Course> courseList;
-    private List<Instructor> instructorList;
-    private List<Classroom> classroomList;
-    private List<String> timeSlots = List.of("9AM-10AM", "10AM-11AM", "11AM-12PM");
+    
+    private void generateAndDisplayTimetable() {
+        List<Course> courses = loadCoursesFromCSV("courses.csv");
+        List<Instructor> instructors = loadInstructorsFromCSV("instructors.csv");
+        List<Classroom> classrooms = loadClassroomsFromCSV("classrooms.csv");
 
-    public SelectionWindow(List<Course> courses, List<Instructor> instructors, List<Classroom> classrooms) {
-        this.courseList = courses;
-        this.instructorList = instructors;
-        this.classroomList = classrooms;
-
-        frame = new JFrame("Selection Window");
-        frame.setSize(400, 200);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLayout(new FlowLayout());
-
-        JButton manualButton = new JButton("Manual");
-        JButton automaticButton = new JButton("Automatic");
-
-        automaticButton.addActionListener(e -> generateAndDisplayTimetable());
-
-        frame.add(manualButton);
-        frame.add(automaticButton);
-        frame.setVisible(true);
+        TimetableGenerator timetableGenerator = new TimetableGenerator(courses, instructors, classrooms);
+        List<TimetableEntry> timetable = timetableGenerator.generateTimetable();
+        
+        new TimetableDisplay(timetable);
+        saveTimetableToCSV(timetable);
     }
 
-    private void generateAndDisplayTimetable() {
-        List<TimetableEntry> timetable = new ArrayList<>();
-        Map<Instructor, List<String>> instructorAvailability = new HashMap<>();
-        Map<Classroom, List<String>> classroomAvailability = new HashMap<>();
+    private List<Course> loadCoursesFromCSV(String filename) {
+        List<Course> courses = new ArrayList<>();
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+            br.readLine(); 
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 6) {
+                    String title = data[0].trim();
+                    String code = data[1].trim();
+                    String department = data[2].trim();
+                    int students = Integer.parseInt(data[3].trim());
+                    int classHours = Integer.parseInt(data[4].trim());
+                    int tutorialHours = Integer.parseInt(data[5].trim());
+                    int labHours = data.length > 6 ? Integer.parseInt(data[6].trim()) : 0;
 
-        for (Instructor instructor : instructorList) {
-            instructorAvailability.put(instructor, new ArrayList<>(timeSlots));
-        }
-        for (Classroom classroom : classroomList) {
-            classroomAvailability.put(classroom, new ArrayList<>(timeSlots));
-        }
-
-        for (Course course : courseList) {
-            for (String slot : timeSlots) {
-                Instructor assignedInstructor = findAvailableInstructor(instructorAvailability, slot);
-                Classroom assignedClassroom = findAvailableClassroom(classroomAvailability, slot);
-
-                if (assignedInstructor != null && assignedClassroom != null) {
-                    TimetableEntry entry = new TimetableEntry(course, assignedInstructor, assignedClassroom, slot);
-                    timetable.add(entry);
-
-                    instructorAvailability.get(assignedInstructor).remove(slot);
-                    classroomAvailability.get(assignedClassroom).remove(slot);
-
-                    course.setAssigned(1);
-                    break; 
+                    courses.add(new Course(title, code, department, students, classHours, tutorialHours, labHours));
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        displayTimetable(timetable);
+        return courses;
     }
 
-    private Instructor findAvailableInstructor(Map<Instructor, List<String>> availability, String slot) {
-        for (Instructor instructor : availability.keySet()) {
-            if (availability.get(instructor).contains(slot)) {
-                return instructor;
+    private List<Instructor> loadInstructorsFromCSV(String filename) {
+        List<Instructor> instructors = new ArrayList<>();
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+            br.readLine(); 
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 2) {
+                    String name = data[0].trim();
+                    String department = data[1].trim();
+                    instructors.add(new Instructor(name, department));
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
+        return instructors;
     }
 
-    private Classroom findAvailableClassroom(Map<Classroom, List<String>> availability, String slot) {
-        for (Classroom classroom : availability.keySet()) {
-            if (availability.get(classroom).contains(slot)) {
-                return classroom;
+    private List<Classroom> loadClassroomsFromCSV(String filename) {
+        List<Classroom> classrooms = new ArrayList<>();
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(filename))) {
+            br.readLine(); 
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 3) {
+                    String roomNumber = data[0].trim();
+                    String type = data[1].trim();
+                    int capacity = Integer.parseInt(data[2].trim());
+                    classrooms.add(new Classroom(roomNumber, type, capacity));
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
-    }
-
-    private void displayTimetable(List<TimetableEntry> timetable) {
-        JFrame timetableFrame = new JFrame("Generated Timetable");
-        timetableFrame.setSize(600, 400);
-        timetableFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        timetableFrame.setLayout(new BorderLayout());
-
-        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Code", "Course", "Instructor", "Room", "Timeslot"}, 0);
-        JTable table = new JTable(tableModel);
-
-        for (TimetableEntry entry : timetable) {
-            tableModel.addRow(new Object[]{
-                entry.getCourse().getCode(),
-                entry.getCourse().getTitle(),
-                entry.getInstructor().getName(),
-                entry.getClassroom().getRoomNumber(),
-                entry.getTimeslot()
-            });
-        }
-
-        timetableFrame.add(new JScrollPane(table), BorderLayout.CENTER);
-        timetableFrame.setVisible(true);
+        return classrooms;
     }
 }

@@ -1,22 +1,24 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
-public class TimetableDisplay {
-    public static void displayTimetable(List<TimetableEntry> timetable) {
-        System.out.println("Generated Timetable:");
-        System.out.println("----------------------------------------------------------");
-        System.out.printf("%-10s | %-30s | %-15s | %-10s | %-10s%n", 
-                          "Code", "Course", "Instructor", "Room", "Timeslot");
-        System.out.println("----------------------------------------------------------");
+class TimetableDisplay {
+    public TimetableDisplay(List<TimetableEntry> timetable) {
+        JFrame frame = new JFrame("Generated Timetable");
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        String[] columns = {"Course", "Instructor", "Classroom", "TimeSlot"};
+        String[][] data = new String[timetable.size()][4];
         
-        for (TimetableEntry entry : timetable) {
-            System.out.printf("%-10s | %-30s | %-15s | %-10s | %-10s%n",
-                              entry.getCourse().getCode(),
-                              entry.getCourse().getTitle(),
-                              entry.getInstructor().getName(),
-                              entry.getClassroom().getRoomNumber(),
-                              entry.getTimeslot());
+        for (int i = 0; i < timetable.size(); i++) {
+            TimetableEntry entry = timetable.get(i);
+            data[i] = new String[]{entry.getCourse(), entry.getInstructor(), entry.getClassroom(), entry.getTimeslot()};
         }
         
-        System.out.println("----------------------------------------------------------");
+        JTable table = new JTable(data, columns);
+        frame.add(new JScrollPane(table), BorderLayout.CENTER);
+        frame.setVisible(true);
     }
 }

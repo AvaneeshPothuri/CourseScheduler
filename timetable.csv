@@ -1,0 +1,26 @@
+Course,Instructor,Classroom,TimeSlot
+History,Dr. Smith,Room 101,9AM-10AM
+Biology,Dr. Johnson,Room 102,9AM-10AM
+Math,Dr. Lee,Lab 1,9AM-10AM
+Physics,Dr. Brown,Lab 2,9AM-10AM
+Chemistry,Dr. Green,Hall A,9AM-10AM
+Physics,Dr. Smith,Room 101,10AM-11AM
+Chemistry,Dr. Johnson,Room 102,10AM-11AM
+Math,Dr. Lee,Lab 1,10AM-11AM
+History,Dr. Brown,Lab 2,10AM-11AM
+Biology,Dr. Green,Hall A,10AM-11AM
+Math,Dr. Smith,Room 101,11AM-12PM
+History,Dr. Johnson,Room 102,11AM-12PM
+Chemistry,Dr. Lee,Lab 1,11AM-12PM
+Physics,Dr. Brown,Lab 2,11AM-12PM
+Biology,Dr. Green,Hall A,11AM-12PM
+Math,Dr. Smith,Room 101,1PM-2PM
+History,Dr. Johnson,Room 102,1PM-2PM
+Physics,Dr. Lee,Lab 1,1PM-2PM
+Biology,Dr. Brown,Lab 2,1PM-2PM
+Chemistry,Dr. Green,Hall A,1PM-2PM
+Math,Dr. Smith,Room 101,2PM-3PM
+History,Dr. Johnson,Room 102,2PM-3PM
+Chemistry,Dr. Lee,Lab 1,2PM-3PM
+Physics,Dr. Brown,Lab 2,2PM-3PM
+Biology,Dr. Green,Hall A,2PM-3PM

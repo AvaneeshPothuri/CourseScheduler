@@ -60,7 +60,7 @@ public class ClassroomUI {
     }
 
     private void openSelectionWindow() {
-        new SelectionWindow(courseList, instructorList, classroomManager.getClassrooms());
+        new SelectionWindow();
         frame.dispose();
     }
 

@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CourseSchedulerUI extends JFrame {
     private DefaultListModel<Course> courseListModel;
@@ -102,9 +103,9 @@ public class CourseSchedulerUI extends JFrame {
                "\nCode: " + course.getCode() +
                "\nDepartment: " + course.getDepartment() +
                "\nStudents: " + course.getNumStudents() +
-               "\nClass Hours: " + String.join(", ", course.getClassHours()) +
-               "\nTutorial Hours: " + String.join(", ", course.getTutorialHours()) +
-               "\nLab Hours: " + String.join(", ", course.getLabHours());
+               "\nClass Hours: " + course.getClassHours().stream().map(String::valueOf).collect(Collectors.joining(", ")) +
+               "\nTutorial Hours: " + course.getTutorialHours().stream().map(String::valueOf).collect(Collectors.joining(", ")) +
+               "\nLab Hour: " + (course.getLabHour() != null ? course.getLabHour() : "None");
     }
 
     private void saveCourses() {
